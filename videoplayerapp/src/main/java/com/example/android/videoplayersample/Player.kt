@@ -19,20 +19,23 @@ package com.example.android.videoplayersample
 import android.content.Context
 import android.media.AudioManager
 import android.net.Uri
-import android.support.v4.media.AudioAttributesCompat
+import androidx.media.AudioAttributesCompat
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
+
 
 /**
  * Creates and manages a [com.google.android.exoplayer2.ExoPlayer] instance.
@@ -72,8 +75,17 @@ class PlayerHolder(private val context: Context,
     }
 
     private fun createExtractorMediaSource(uri: Uri): MediaSource {
-        return ExtractorMediaSource.Factory(
-                DefaultDataSourceFactory(context, "exoplayer-learning"))
+
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory(
+                "exoplayer-learning",
+                null /* listener */,
+                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                true /* allowCrossProtocolRedirects */
+        )
+
+        return ProgressiveMediaSource.Factory(
+                DefaultDataSourceFactory(context, null, httpDataSourceFactory))
                 .createMediaSource(uri)
     }
 
@@ -120,7 +132,7 @@ class PlayerHolder(private val context: Context,
      */
     private fun attachLogging(exoPlayer: ExoPlayer) {
         // Show toasts on state changes.
-        exoPlayer.addListener(object : Player.DefaultEventListener() {
+        exoPlayer.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_ENDED -> {
@@ -138,7 +150,7 @@ class PlayerHolder(private val context: Context,
             }
         })
         // Write to log on state changes.
-        exoPlayer.addListener(object : Player.DefaultEventListener() {
+        exoPlayer.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 info { "playerStateChanged: ${getStateString(playbackState)}, $playWhenReady" }
             }

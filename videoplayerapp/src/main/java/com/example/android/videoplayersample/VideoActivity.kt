@@ -23,8 +23,9 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v7.app.AppCompatActivity
 import android.util.Rational
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import kotlinx.android.synthetic.main.activity_video.*
@@ -81,9 +82,11 @@ class VideoActivity : AppCompatActivity(), AnkoLogger {
                 // MediaSession actions (and they won't show up in the minimized PIP activity):
                 // [ACTION_SKIP_PREVIOUS], [ACTION_SKIP_NEXT], [ACTION_SKIP_TO_QUEUE_ITEM]
                 setQueueNavigator(object : TimelineQueueNavigator(mediaSession) {
-                    override fun getMediaDescription(windowIndex: Int): MediaDescriptionCompat {
+                    override fun getMediaDescription(player: Player?, windowIndex: Int): MediaDescriptionCompat {
                         return MediaCatalog[windowIndex]
+
                     }
+
                 })
             }
 
@@ -92,12 +95,12 @@ class VideoActivity : AppCompatActivity(), AnkoLogger {
     private fun activateMediaSession() {
         // Note: do not pass a null to the 3rd param below, it will cause a NullPointerException.
         // To pass Kotlin arguments to Java varargs, use the Kotlin spread operator `*`.
-        mediaSessionConnector.setPlayer(playerHolder.audioFocusPlayer, null)
+        mediaSessionConnector.setPlayer(playerHolder.audioFocusPlayer)
         mediaSession.isActive = true
     }
 
     private fun deactivateMediaSession() {
-        mediaSessionConnector.setPlayer(null, null)
+        mediaSessionConnector.setPlayer(null)
         mediaSession.isActive = false
     }
 
