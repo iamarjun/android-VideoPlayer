@@ -81,13 +81,13 @@ class VideoActivity : AppCompatActivity(), AnkoLogger {
                 // If QueueNavigator isn't set, then mediaSessionConnector will not handle following
                 // MediaSession actions (and they won't show up in the minimized PIP activity):
                 // [ACTION_SKIP_PREVIOUS], [ACTION_SKIP_NEXT], [ACTION_SKIP_TO_QUEUE_ITEM]
-                setQueueNavigator(object : TimelineQueueNavigator(mediaSession) {
-                    override fun getMediaDescription(player: Player?, windowIndex: Int): MediaDescriptionCompat {
-                        return MediaCatalog[windowIndex]
-
-                    }
-
-                })
+//                setQueueNavigator(object : TimelineQueueNavigator(mediaSession) {
+//                    override fun getMediaDescription(player: Player?, windowIndex: Int): MediaDescriptionCompat {
+//                        return MediaCatalog[windowIndex]
+//
+//                    }
+//
+//                })
             }
 
 
@@ -100,7 +100,7 @@ class VideoActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun deactivateMediaSession() {
-        mediaSessionConnector.setPlayer(null)
+        mediaSessionConnector.setPlayer(null    )
         mediaSession.isActive = false
     }
 
